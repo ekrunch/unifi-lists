@@ -1,0 +1,30 @@
+name: Update DoH Blocklists
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-list:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Run blocklist update script
+        run: python3 scripts/update_doh.py
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          file_pattern: DoH/doh-ipv4.txt DoH/doh-ipv6.txt
+          commit_message: "chore: auto-update DoH IPv4 and IPv6 blocklists [skip ci]"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          skip_ci: true
